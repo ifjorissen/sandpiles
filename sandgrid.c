@@ -6,9 +6,9 @@
  */
 
 #include "header.h"
-grid_simulation_t gridsim;
+grid_simulation_t *gridsim;
 barrier_t barr;
-sandgrid_t sandy;
+// sandgrid_t sandy;
 
 
 // int fire_cell(sandgrid_t *sgrid, int cellnum){
@@ -61,8 +61,10 @@ void visual_grid(sandgrid_t *sgrid){
 
 void *stabilize(void *info){
 	int tNum = (int)info;
+	// grid_simulation_t *gsim = 
 	// pthread_data *pt_info = info;
 	printf("stabilize called from thread: %d\n", tNum);
+	printf("gsim test: %s\n", gridsim->msg);
 	bar_wait(&barr);
 	// visual_grid(sgrid);
 	return NULL;
