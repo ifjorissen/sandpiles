@@ -8,7 +8,7 @@
 
 #include "header.h"
 
-grid_simulation_t *gridsim;
+grid_simulation_t gridsim;
 barrier_t barr;
 // sandgrid_t sandy;
 
