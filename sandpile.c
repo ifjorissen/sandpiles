@@ -4,39 +4,44 @@
    Math 389
    11.16.14
  */
-   
-#include "sandgrid.h"
-#include <stdio.h>
-#include <time.h>
-#include <pthread.h> 
-#include <stdlib.h>
-#include <unistd.h>
 
-// typedef struct pthread_data_t{
 
-// }pthread_data_t;
+#include "header.h"
 
+// grid_simulation_t *gridsim;
+barrier_t barr;
+// sandgrid_t sandy;
 
 int main(int argc, char **argv){
-	pthread_data_t pt_data [4];
+	// pthread_t pt_data [NUMTHREADS];
+	// barrier_t barr;
+	grid_simulation_t *gridsim =  (grid_simulation_t *)malloc(sizeof(grid_simulation_t));
+
+	// printf("Running: 51x51 grid, 5,0000 grains, 2,500 rounds with one thread.\n");
+	// sandgrid_t *sgrid = init_sandgrid(51, 51);
+	// pthread_create(&sgrid->threads, NULL, stabilize, sgrid);
+	// printf("Took _____ seconds.\n");
 
 	printf("Running: 51x51 grid, 5,0000 grains, 2,500 rounds with one thread.\n");
-	sandgrid_t *sgrid = init_sandgrid(51, 51);
-	pthread_create(&sgrid->threads, NULL, stabilize, sgrid);
-	printf("Took _____ seconds.\n");
+	sandgrid_t sandgrid;
+	init_sandgrid(&sandgrid, 51, 51);
 
-	printf("Running: 51x51 grid, 5,0000 grains, 2,500 rounds with one thread.\n");
-	sandgrid_t *sgrid = init_sandgrid(51, 51);
+	barrier_t *barr_ptr = &barr;
+	bar_init(&barr, NUMTHREADS);
+
+	gridsim->sgrid = &sandgrid;
+	gridsim->barrier = &barr;
 
 	//initialize threads
-	for (int i = 0; i<4; i++){
-		pthread_create(&sgrid->threads[i], NULL, stabilize, sgrid);
+	for (int i = 0; i<NUMTHREADS; i++){
+		pthread_create(&gridsim->threads[i], NULL, stabilize, (void *)i);
+		// pthread_join(pt_data[i], NULL);
+	}
+	for (int i = 0; i<NUMTHREADS; i++){
+		// pthread_create(&pt_data[i], NULL, stabilize, (void *)i);
+		pthread_join(gridsim->threads[i], NULL);
 	}
 
-	// //divide grid into regions
-	// pthread_create(&sgrid->tid[0], NULL, stabilize, pt_data[0]);
-	// pthread_create(&sgrid->tid[1], NULL, stabilize, pt_data[1]);
-	// pthread_create(&sgrid->tid[2], NULL, stabilize, pt_data[2]);
-	// pthread_create(&sgrid->tid[3], NULL, stabilize, pt_data[3]);
-	printf("Took _____ seconds.\n");
+	exit(0);
+
 }
