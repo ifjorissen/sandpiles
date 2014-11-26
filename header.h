@@ -46,7 +46,7 @@ typedef struct grid_simulation_t{
 	sandgrid_t *sgrid;
 	pthread_t threads [NUMTHREADS];
 	barrier_t *barrier;
-	char *msg;
+	// char *msg;
 }grid_simulation_t;
 
 void init_sandgrid(sandgrid_t *sandgrid, int width, int height);

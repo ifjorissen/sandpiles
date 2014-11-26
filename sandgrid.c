@@ -6,7 +6,7 @@
  */
 
 #include "header.h"
-grid_simulation_t *gridsim;
+grid_simulation_t gridsim;
 barrier_t barr;
 // sandgrid_t sandy;
 
@@ -64,8 +64,8 @@ void *stabilize(void *info){
 	// grid_simulation_t *gsim = 
 	// pthread_data *pt_info = info;
 	printf("stabilize called from thread: %d\n", tNum);
-	printf("gsim test: %s\n", gridsim->msg);
-	bar_wait(&barr);
+	// printf("gsim test: %s\n", gridsim.msg);
+	bar_wait(gridsim.barrier);
 	// visual_grid(sgrid);
 	return NULL;
 }
