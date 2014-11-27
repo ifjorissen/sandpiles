@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 #define NUMTHREADS (4)
-#define NUMGRAINS (500)
+#define NUMGRAINS (250)
 
 // #include "barrier.h"
 // #include "sandgrid.h"

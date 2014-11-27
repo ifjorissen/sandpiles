@@ -66,7 +66,8 @@ void display(void){
 		glBegin(GL_QUAD_STRIP);
 			int fc_cellnum = (i-1)*gridH;
 			color = cell_color(gridsim.sgrid->cells[fc_cellnum]);
-			glColor3f(color[0], color[1], color[2]);
+			// glColor3f(color[0], color[1], color[2]);
+			glColor3f(.1, .1, .4);
 			glVertex2f(0.0f, i); // The top left corner  
 			glVertex2f(0.0f, (i-1)); // The bottom left corner 
 			glVertex2f(1.0f, i); //top right
@@ -74,7 +75,14 @@ void display(void){
 			//addition verticies
 			for(float j = 2.0; j<gridW+1; j++){
 				int cellnum = (i-1)*gridH + (j-1);
-				color = cell_color(gridsim.sgrid->cells[cellnum]);
+				if ((j == gridW) || (i==1) || (i==gridH)){
+					color[0] = .1;
+					color[1] = .1;
+					color[2] = .4;
+				}
+				else{
+					color = cell_color(gridsim.sgrid->cells[cellnum]);
+				}
 				glColor3f(color[0], color[1], color[2]);
 				glVertex2f(j, i); 
 				glVertex2f(j, (i-1)); 
@@ -100,7 +108,7 @@ barrier_t barr;
 	// char *test = "is this working?";
 	grid_simulation_t *gsim =  (grid_simulation_t *)malloc(sizeof(grid_simulation_t));
 
-	init_sandgrid(&sandgrid, 16, 16);
+	init_sandgrid(&sandgrid, gridW, gridH);
 	bar_init(&barr, NUMTHREADS);
 
 	gsim->sgrid = &sandgrid;
@@ -119,6 +127,7 @@ barrier_t barr;
 		pthread_create(&gsim->threads[i], NULL, stabilize, (void *)i);
 	}
 	for (int i = 0; i<NUMTHREADS; i++){
+		printf("joining\n");
 		pthread_join(gsim->threads[i], NULL);
 	}
 

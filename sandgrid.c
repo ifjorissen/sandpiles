@@ -45,7 +45,7 @@ void *stabilize(void *info){
 	printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
 	
 	//100 iterations
-	for(int i = 0; i<1000; i++){
+	for(int i = 0; i<100; i++){
 		for(int j = 0; j<=regionHI; j++){
 			for (int k = 0; k < gridW; k++){
 				int cellnum = j*(gridW)+k;
@@ -96,8 +96,6 @@ void *stabilize(void *info){
 
 		}
 	}
-
-
 
 	bar_wait(gridsim.barrier);
 	return NULL;

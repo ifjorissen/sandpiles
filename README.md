@@ -7,12 +7,22 @@
 
 Sandgrids
 
-To run the simulation with OpenGL visualization:
-`gcc -pthread -o renderpile render_piles.c sandgrid.c barrier.c -framework OpenGL -framework GLUT`
+To compile everything:
+`make`
+
+To run OpenGL viz or ASCII vis:
+`./renderOpenGL`
+`./renderASCII`
 
 
+Todo:
+* BUG: Hard to reproduce, but I will sometimes get an Illegal Hardware Instruction error
+* In stabilize function: thread waits if the mutex is locked
+* Cells which are sinks and can hold any number of grains
+* OpenGl animation
 
-Test output for the code in `test.c`
+
+Test output for the code in sandpiles
 
 ```
 	stabilize called from thread: 1

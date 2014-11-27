@@ -28,7 +28,7 @@ int main(int argc, char **argv){
 	// gsim->msg = test;
 
 	gridsim = *gsim;
-
+	
 	//initialize mutexes
 	for (int i = 0; i<(NUMTHREADS-1); i++){
 		pthread_mutex_init(&gsim->mutex[i], NULL);
