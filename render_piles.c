@@ -6,10 +6,6 @@
  */
 
 #include "header.h"
-
-#define gridW (16)
-#define gridH (16)
-
 grid_simulation_t gridsim;
 
 float * cell_color(int grains){
@@ -56,6 +52,8 @@ float * cell_color(int grains){
 }
 
 void display(void){
+	int gridH = gridsim.sgrid->height;
+	int gridW = gridsim.sgrid->width;
 	glClear(GL_COLOR_BUFFER_BIT); //Clear the colour buffer (more buffers later on)  
 	glLoadIdentity(); // Load the Identity Matrix to reset our drawing locations
 	glTranslatef(-(gridW/2), -(gridH/2), -gridW);
@@ -100,15 +98,14 @@ void reshape (int width, int height) {
 	glMatrixMode(GL_MODELVIEW); 
 } 
 
-int main (int argc, char **argv)
-{
-barrier_t barr;
+int main (int argc, char **argv){
+	barrier_t barr;
 	sandgrid_t sandgrid;
 
 	// char *test = "is this working?";
 	grid_simulation_t *gsim =  (grid_simulation_t *)malloc(sizeof(grid_simulation_t));
 
-	init_sandgrid(&sandgrid, gridW, gridH);
+	init_sandgrid(&sandgrid, 16, 16);
 	bar_init(&barr, NUMTHREADS);
 
 	gsim->sgrid = &sandgrid;
@@ -126,15 +123,15 @@ barrier_t barr;
 	for (int i = 0; i<NUMTHREADS; i++){
 		pthread_create(&gsim->threads[i], NULL, stabilize, (void *)i);
 	}
-	for (int i = 0; i<NUMTHREADS; i++){
-		printf("joining\n");
-		pthread_join(gsim->threads[i], NULL);
-	}
+	// for (int i = 0; i<NUMTHREADS; i++){
+	// 	printf("joining\n");
+	// 	pthread_join(gsim->threads[i], NULL);
+	// }
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE);
 	glutInitWindowSize(500,500);
-	glutInitWindowPosition (100, 500);
+	glutInitWindowPosition (100, 600);
 
 	glutCreateWindow("Intro");
 	glClearColor(0.0,0.0,0.0,0.0);

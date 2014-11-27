@@ -7,19 +7,6 @@
 
 #include "header.h"
 grid_simulation_t gridsim;
-// barrier_t barr;
-// sandgrid_t sandy;
-
-
-// int fire_cell(sandgrid_t *sgrid, int cellnum){
-// 	sgrid->cells[cellnum] -= 4;
-// 	int cellN = i-1*(sgrid->width)+j;
-// 	//north
-// 	//south
-// 	//east
-// 	//west
-
-// }
 
 void visual_grid(sandgrid_t *sgrid){
 	for(int i = 0; i < sgrid->height; i++){
@@ -33,7 +20,21 @@ void visual_grid(sandgrid_t *sgrid){
 }
 
 
-//TO DO: add mutex_try_lock() with a condition code so that threads wait
+int isStable(sandgrid_t *sgrid){
+	//check all the cells, skipping the 
+	//first and last columns
+	// & first and last rows
+	int count = 0;
+	for(int j = 1; j<sgrid->height; j++){
+		for (int k = 1; k<sgrid->width; k++){
+			int cellnum = j*(sgrid->width)+k;
+			if(sgrid->cells[cellnum]>=4){
+				count++;
+			}
+		}
+	}
+	return count;
+}
 
 void *stabilize(void *info){
 	int tid = (int)info;
@@ -41,62 +42,64 @@ void *stabilize(void *info){
 	int gridH = gridsim.sgrid->height;
 	int regionLO = (gridH)/NUMTHREADS * tid;
 	int regionHI = (gridH)/NUMTHREADS * (tid+1) - 1;
-	// gridsim.boundaries[tid] = regionHI;
 	printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
 	
 	//100 iterations
-	for(int i = 0; i<100; i++){
-		for(int j = 0; j<=regionHI; j++){
+	for(int i = 0; i<10; i++){
+		for(int j = regionLO; j<=regionHI; j++){
 			for (int k = 0; k < gridW; k++){
-				int cellnum = j*(gridW)+k;
-				int cellN = (j-1)*(gridW)+k;
-				int cellE = j*(gridW)+(k+1);
-				int cellW = j*(gridW)+(k-1);
-				int cellS = (j+1)*(gridW)+k;
-				//we need to lock the higher row and this row (thus, higher mutex)
-				if ((j==regionHI)&&(tid!=(NUMTHREADS-1))){
-					//lock the important bits
-					pthread_mutex_lock(&gridsim.mutex[tid]);
-					// printf("locked mutex num: %d in critical section row: %d, tid: %d\n", tid, j, tid);
-					if(gridsim.sgrid->cells[cellnum] >= 4){
-						gridsim.sgrid->cells[cellnum] -= 4;
-						gridsim.sgrid->cells[cellS] += 1;
-						gridsim.sgrid->cells[cellN] += 1;
-						gridsim.sgrid->cells[cellE] += 1;
-						gridsim.sgrid->cells[cellW] += 1;
+				//we're looking at a boundary sink cell, so we don't check the max or fire
+				if(!((j == 0) || (j == gridH) || (k == 0) || (k==gridW))){
+					int cellnum = j*(gridW)+k;
+					int cellN = (j-1)*(gridW)+k;
+					int cellE = j*(gridW)+(k+1);
+					int cellW = j*(gridW)+(k-1);
+					int cellS = (j+1)*(gridW)+k;
+					//we need to lock the higher row and this row (thus, higher mutex)
+					if ((j==regionHI)&&(tid!=(NUMTHREADS-1))){
+						//lock the important bits
+						pthread_mutex_lock(&gridsim.mutex[tid]);
+
+						// printf("locked mutex num: %d in critical section row: %d, tid: %d\n", tid, j, tid);
+						if(gridsim.sgrid->cells[cellnum] >= 4){
+							gridsim.sgrid->cells[cellnum] -= 4;
+							gridsim.sgrid->cells[cellS] += 1;
+							gridsim.sgrid->cells[cellN] += 1;
+							gridsim.sgrid->cells[cellE] += 1;
+							gridsim.sgrid->cells[cellW] += 1;
+						}
+						pthread_mutex_unlock(&gridsim.mutex[tid]);
+						// printf("unlocked mutex num: %d in critical section row: %d, tid: %d\n", tid, j, tid);
 					}
-					pthread_mutex_unlock(&gridsim.mutex[tid]);
-					// printf("unlocked mutex num: %d in critical section row: %d, tid: %d\n", tid, j, tid);
-				}
-				//we need to lock the lower row (thus, lower mutex) and this row
-				else if ((j==regionLO)&&(tid!= 0)){
-					pthread_mutex_lock(&gridsim.mutex[tid-1]);
-					// printf("locked mutex num: %d in critical section row: %d, tid: %d\n", tid-1, j, tid);
-					if(gridsim.sgrid->cells[cellnum] >= 4){
-						gridsim.sgrid->cells[cellnum] -= 4;
-						gridsim.sgrid->cells[cellS] += 1;
-						gridsim.sgrid->cells[cellN] += 1;
-						gridsim.sgrid->cells[cellE] += 1;
-						gridsim.sgrid->cells[cellW] += 1;
+					//we need to lock the lower row (thus, lower mutex) and this row
+					else if ((j==regionLO)&&(tid!= 0)){
+						pthread_mutex_lock(&gridsim.mutex[tid-1]);
+						pthread_cond_wait(&gridsim.cond[tid-1], &gridsim.mutex[tid-1]);
+						// printf("locked mutex num: %d in critical section row: %d, tid: %d\n", tid-1, j, tid);
+						if(gridsim.sgrid->cells[cellnum] >= 4){
+							gridsim.sgrid->cells[cellnum] -= 4;
+							gridsim.sgrid->cells[cellS] += 1;
+							gridsim.sgrid->cells[cellN] += 1;
+							gridsim.sgrid->cells[cellE] += 1;
+							gridsim.sgrid->cells[cellW] += 1;
+						}
+						pthread_mutex_unlock(&gridsim.mutex[tid-1]);
+						// printf("unlocked mutex num: %d in critical section row: %d, tid: %d\n", tid-1, j, tid);
 					}
-					pthread_mutex_unlock(&gridsim.mutex[tid-1]);
-					// printf("unlocked mutex num: %d in critical section row: %d, tid: %d\n", tid-1, j, tid);
-				}
-				//we don't need a lock
-				else{
-					if(gridsim.sgrid->cells[cellnum] >= 4){
-						gridsim.sgrid->cells[cellnum] -= 4;
-						gridsim.sgrid->cells[cellS] += 1;
-						gridsim.sgrid->cells[cellN] += 1;
-						gridsim.sgrid->cells[cellE] += 1;
-						gridsim.sgrid->cells[cellW] += 1;
+					//we don't need a lock
+					else{
+						if(gridsim.sgrid->cells[cellnum] >= 4){
+							gridsim.sgrid->cells[cellnum] -= 4;
+							gridsim.sgrid->cells[cellS] += 1;
+							gridsim.sgrid->cells[cellN] += 1;
+							gridsim.sgrid->cells[cellE] += 1;
+							gridsim.sgrid->cells[cellW] += 1;
+						}
 					}
 				}
 			}
-
 		}
 	}
-
 	bar_wait(gridsim.barrier);
 	return NULL;
 }

@@ -20,10 +20,7 @@
 #include <stdlib.h>
 
 #define NUMTHREADS (4)
-#define NUMGRAINS (250)
-
-// #include "barrier.h"
-// #include "sandgrid.h"
+#define NUMGRAINS (100)
 
 typedef struct _barrier_t{
 	int count;
@@ -45,15 +42,16 @@ typedef struct sandgrid_t{
 
 void init_sandgrid(sandgrid_t *sandgrid, int width, int height);
 void visual_grid(sandgrid_t *sandgrid);
-int isFull(sandgrid_t *sandgrid, int cell);
 void *stabilize(void *arg);
+int isStable(sandgrid_t *sandgrid);
 
 typedef struct grid_simulation_t{
 	sandgrid_t *sgrid;
 	pthread_t threads [NUMTHREADS];
-	barrier_t *barrier;
 	pthread_mutex_t mutex [NUMTHREADS-1];
-	// int boundaries [NUMTHREADS-1];
+	pthread_cond_t cond [NUMTHREADS-1];
+	barrier_t *barrier;
+	// int stable_regions [NUMTHREADS];
 	// char *msg;
 }grid_simulation_t;
 

@@ -10,7 +10,6 @@
 
 grid_simulation_t gridsim;
 
-
 int main(int argc, char **argv){
 	barrier_t barr;
 	sandgrid_t sandgrid;
@@ -28,19 +27,29 @@ int main(int argc, char **argv){
 	// gsim->msg = test;
 
 	gridsim = *gsim;
-	
+	int stable = 1;
+
+
 	//initialize mutexes
-	for (int i = 0; i<(NUMTHREADS-1); i++){
-		pthread_mutex_init(&gsim->mutex[i], NULL);
+	while(stable !=0){
+		visual_grid(gridsim.sgrid);
+		for (int i = 0; i<(NUMTHREADS-1); i++){
+			pthread_mutex_init(&gridsim.mutex[i], NULL);
+		}
+		//initialize threads
+		for (int i = 0; i<NUMTHREADS; i++){
+			pthread_create(&gridsim.threads[i], NULL, stabilize, (void *)i);
+		}
+		//join threads
+		for (int i = 0; i<NUMTHREADS; i++){
+			pthread_join(gridsim.threads[i], NULL);
+			// printf("region %d stable (0 if yes): %d\n", i, gridsim.stable_regions[i]);
+		}
+		stable = isStable(gridsim.sgrid);
 	}
 
-	//initialize threads
-	for (int i = 0; i<NUMTHREADS; i++){
-		pthread_create(&gsim->threads[i], NULL, stabilize, (void *)i);
-	}
-	for (int i = 0; i<NUMTHREADS; i++){
-		pthread_join(gsim->threads[i], NULL);
-	}
+	//ascii visualization
+	printf("Sandpile after stability has been reached: \n");
 	visual_grid(gridsim.sgrid);
 
 	exit(0);
