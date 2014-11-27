@@ -32,3 +32,28 @@ Test output for the code in `test.c`
 	mutex locked
 	condition met, mutex unlocked
 ```
+
+
+
+  * sandpile simulation
+    * celluar automata that can be generalized to any graph
+    * n x n sandpile grid
+    if number of threads = 4; 
+
+Compass: 
+     N
+   W . E
+     S
+    _________________________
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|----> rows 2/3 mutex 1
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|----> rows 5/6 mutex 2
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|----> rows 8/9 mutex 3
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|
+    |_|_|_|_|_|_|_|_|_|_|_|_|

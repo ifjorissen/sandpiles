@@ -7,10 +7,10 @@
 
 #include "header.h"
 
-#define gridW (25)
-#define gridH (25)
+#define gridW (16)
+#define gridH (16)
 
-sandgrid_t *sgrid;
+grid_simulation_t gridsim;
 
 float * cell_color(int grains){
 	static float col[3];
@@ -65,7 +65,7 @@ void display(void){
 	for(float i = 1.0; i<gridH+1; i++){
 		glBegin(GL_QUAD_STRIP);
 			int fc_cellnum = (i-1)*gridH;
-			color = cell_color(sgrid->cells[fc_cellnum]);
+			color = cell_color(gridsim.sgrid->cells[fc_cellnum]);
 			glColor3f(color[0], color[1], color[2]);
 			glVertex2f(0.0f, i); // The top left corner  
 			glVertex2f(0.0f, (i-1)); // The bottom left corner 
@@ -74,8 +74,7 @@ void display(void){
 			//addition verticies
 			for(float j = 2.0; j<gridW+1; j++){
 				int cellnum = (i-1)*gridH + (j-1);
-				printf("cell num: %d. grains: %d\n", cellnum, sgrid->cells[cellnum]);
-				color = cell_color(sgrid->cells[cellnum]);
+				color = cell_color(gridsim.sgrid->cells[cellnum]);
 				glColor3f(color[0], color[1], color[2]);
 				glVertex2f(j, i); 
 				glVertex2f(j, (i-1)); 
@@ -86,7 +85,7 @@ void display(void){
 }
 
 void reshape (int width, int height) {  
-	glViewport(0, 0, (GLsizei)width, (GLsizei)height); /
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 	glMatrixMode(GL_PROJECTION); 
 	glLoadIdentity(); 
 	gluPerspective(60, (GLfloat)width / (GLfloat)height, 1.0, 100.0); 
@@ -95,8 +94,33 @@ void reshape (int width, int height) {
 
 int main (int argc, char **argv)
 {
-	sgrid = init_sandgrid(gridW, gridH);
-	pthread_create(&sgrid->threads, NULL, stabilize, sgrid);
+barrier_t barr;
+	sandgrid_t sandgrid;
+
+	// char *test = "is this working?";
+	grid_simulation_t *gsim =  (grid_simulation_t *)malloc(sizeof(grid_simulation_t));
+
+	init_sandgrid(&sandgrid, 16, 16);
+	bar_init(&barr, NUMTHREADS);
+
+	gsim->sgrid = &sandgrid;
+	gsim->barrier = &barr;
+	// gsim->msg = test;
+
+	gridsim = *gsim;
+
+	//initialize mutexes
+	for (int i = 0; i<(NUMTHREADS-1); i++){
+		pthread_mutex_init(&gsim->mutex[i], NULL);
+	}
+
+	//initialize threads
+	for (int i = 0; i<NUMTHREADS; i++){
+		pthread_create(&gsim->threads[i], NULL, stabilize, (void *)i);
+	}
+	for (int i = 0; i<NUMTHREADS; i++){
+		pthread_join(gsim->threads[i], NULL);
+	}
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE);

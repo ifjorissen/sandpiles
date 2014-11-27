@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #define NUMTHREADS (4)
+#define NUMGRAINS (500)
 
 // #include "barrier.h"
 // #include "sandgrid.h"
@@ -42,16 +43,19 @@ typedef struct sandgrid_t{
 				  //array of cells which will hold the number of grains
 } sandgrid_t;
 
-typedef struct grid_simulation_t{
-	sandgrid_t *sgrid;
-	pthread_t threads [NUMTHREADS];
-	barrier_t *barrier;
-	// char *msg;
-}grid_simulation_t;
-
 void init_sandgrid(sandgrid_t *sandgrid, int width, int height);
 void visual_grid(sandgrid_t *sandgrid);
 int isFull(sandgrid_t *sandgrid, int cell);
 void *stabilize(void *arg);
+
+typedef struct grid_simulation_t{
+	sandgrid_t *sgrid;
+	pthread_t threads [NUMTHREADS];
+	barrier_t *barrier;
+	pthread_mutex_t mutex [NUMTHREADS-1];
+	// int boundaries [NUMTHREADS-1];
+	// char *msg;
+}grid_simulation_t;
+
 
 #endif
