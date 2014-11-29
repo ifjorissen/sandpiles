@@ -19,12 +19,11 @@
 #include <pthread.h> 
 #include <stdlib.h>
 
-#define NUMTHREADS (5)
+#define NUMTHREADS (4)
 #define NUMGRAINS (100)
 
 typedef struct _barrier_t{
 	int count;
-	int cmax;
 	pthread_cond_t last_thread;
 	pthread_mutex_t mutex;
 }barrier_t;
@@ -42,8 +41,8 @@ typedef struct sandgrid_t{
 
 void init_sandgrid(sandgrid_t *sandgrid, int width, int height);
 void visual_grid(sandgrid_t *sandgrid);
-void *stabilize(void *arg);
-void *displayGRID(void *arg);
+void stabilize(int info);
+void displayGRID();
 int isStable(sandgrid_t *sandgrid);
 
 typedef struct grid_simulation_t{
@@ -52,8 +51,6 @@ typedef struct grid_simulation_t{
 	pthread_mutex_t mutex [NUMTHREADS-1];
 	pthread_cond_t cond [NUMTHREADS-1];
 	barrier_t *barrier;
-	// int stable_regions [NUMTHREADS];
-	// char *msg;
 }grid_simulation_t;
 
 

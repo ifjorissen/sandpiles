@@ -36,13 +36,12 @@ int isStable(sandgrid_t *sgrid){
 	return count;
 }
 
-void *stabilize(void *info){
-	int tid = (int)info;
+void stabilize(int tid){
 	int gridW = gridsim.sgrid->width;
 	int gridH = gridsim.sgrid->height;
 	int regionLO = (gridH)/NUMTHREADS * tid;
 	int regionHI = (gridH)/NUMTHREADS * (tid+1) - 1;
-	printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
+	// printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
 	
 	//10 iterations
 	for(int i = 0; i<10; i++){
@@ -100,17 +99,12 @@ void *stabilize(void *info){
 			}
 		}
 	}
-	printf("end of stabilize from thread: %d\n", tid);
-	bar_wait(gridsim.barrier);
-	return NULL;
+	// printf("end of stabilize from thread: %d\n", tid);
 }
 
-void *displayGRID(void *info){
-	bar_wait(gridsim.barrier);
-	int tid = (int)info;
-	printf("displayGRID called from tid: %d\n", tid);
+void displayGRID(){
+	// bar_wait(gridsim.barrier);
 	visual_grid(gridsim.sgrid);
-	return NULL;
 }
 
 void init_cells(sandgrid_t *sgrid){
