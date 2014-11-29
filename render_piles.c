@@ -51,21 +51,25 @@ float * cell_color(int grains){
 	return col;
 }
 
-void updateSandPiles(){
-	stabilize(1);
-	// for (int i = 0; i<(NUMTHREADS-1); i++){
-	// 	pthread_mutex_init(&gridsim.mutex[i], NULL);
-	// }
-
-	// //initialize threads
-	// for (int i = 0; i<NUMTHREADS; i++){
-	// 	pthread_create(gridsim.threads[i], NULL, stabilize, (void *)i);
-	// }
-	// for (int i = 0; i<NUMTHREADS; i++){
-	// 	printf("joining from update\n");
-	// 	pthread_join(gridsim.threads[i], NULL);
-	// }
-	glutPostRedisplay();
+void *loop(void *info){
+	int tid = (int)info;
+	int stable = 1;
+	int iteration = 0;
+    while (stable != 0) {
+		if (tid == 0) {
+			iteration ++;
+			printf("\niteration: %d", iteration);
+			glutPostRedisplay();
+			printf("\ndisplay updated\n");
+			stable = isStable(gridsim.sgrid);
+ 		}
+ 		bar_wait(gridsim.barrier);
+ 		stabilize(tid);
+		bar_wait(gridsim.barrier);
+    }
+    // printf("the grid is stable\n");
+    // exit(0);
+    return NULL;
 }
 
 void display(void){
@@ -105,7 +109,6 @@ void display(void){
 		glEnd();
 	}
 	glFlush();      //Finish rendering
-	// updateSandPiles();
 }
 
 void reshape (int width, int height) {  
@@ -117,10 +120,16 @@ void reshape (int width, int height) {
 } 
 
 int main (int argc, char **argv){
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE);
+	glutInitWindowSize(500,500);
+	glutInitWindowPosition (100, 600);
+	glutCreateWindow("Intro");
+	glClearColor(0.0,0.0,0.0,0.0);
+
 	barrier_t barr;
 	sandgrid_t sandgrid;
-
-	// char *test = "is this working?";
 	grid_simulation_t *gsim =  (grid_simulation_t *)malloc(sizeof(grid_simulation_t));
 
 	init_sandgrid(&sandgrid, 16, 16);
@@ -128,30 +137,18 @@ int main (int argc, char **argv){
 
 	gsim->sgrid = &sandgrid;
 	gsim->barrier = &barr;
-	// gsim->msg = test;
 
 	gridsim = *gsim;
-	//initialize mutexes
+		//initialize mutexes
 	for (int i = 0; i<(NUMTHREADS-1); i++){
 		pthread_mutex_init(&gsim->mutex[i], NULL);
 	}
 
 	//initialize threads
 	for (int i = 0; i<NUMTHREADS; i++){
-		pthread_create(&gsim->threads[i], NULL, stabilize, (void *)i);
-	}
-	for (int i = 0; i<NUMTHREADS; i++){
-		printf("joining\n");
-		pthread_join(gsim->threads[i], NULL);
+		pthread_create(&gsim->threads[i], NULL, loop, (void *)i);
 	}
 
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE);
-	glutInitWindowSize(500,500);
-	glutInitWindowPosition (100, 600);
-
-	glutCreateWindow("Intro");
-	glClearColor(0.0,0.0,0.0,0.0);
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);

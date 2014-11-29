@@ -46,6 +46,8 @@ void displayGRID();
 int isStable(sandgrid_t *sandgrid);
 
 typedef struct grid_simulation_t{
+	int stable;
+	pthread_mutex_t stable_lock;
 	sandgrid_t *sgrid;
 	pthread_t threads [NUMTHREADS];
 	pthread_mutex_t mutex [NUMTHREADS-1];

@@ -11,22 +11,33 @@
 grid_simulation_t gridsim;
 
 void *loop(void* info){
-	int stable = 1;
 	int tid = (int) info;
 	int iteration = 0;
-    while (stable != 0) {
+    while (gridsim.stable != 0) {
 		stabilize(tid);
 		bar_wait(gridsim.barrier);
 		if (tid == 0) {
 			iteration ++;
 			printf("\niteration: %d", iteration);
 			displayGRID(tid);
-			stable = isStable(gridsim.sgrid);
+
+			//determine whether or not the grid is stable
+			pthread_mutex_lock(&gridsim.stable_lock);
+			gridsim.stable = isStable(gridsim.sgrid);
+			pthread_mutex_unlock(&gridsim.stable_lock);
+
+			if(gridsim.stable==0){	
+				printf("the grid is stable\n");
+    			exit(0);
+    			return NULL;
+			}
  		}
  		bar_wait(gridsim.barrier);
+ 		printf("stable: %d tid: %d\n", gridsim.stable, tid );
     }
-    printf("the grid is stable\n");
-    exit(0);
+    // printf("the grid is stable\n");
+    // // pthread_exit(0);
+    // exit(0);
     return NULL;
 }
 
@@ -44,13 +55,15 @@ int main(int argc, char **argv){
 
 	gsim->sgrid = &sandgrid;
 	gsim->barrier = &barr;
+	gsim->stable = 1; //not stable
 
 	gridsim = *gsim;
-	int stable = 1;
 
 	for (int i = 0; i<(NUMTHREADS-1); i++){
 		pthread_mutex_init(&gridsim.mutex[i], NULL);
 	}
+
+	pthread_mutex_init(&gridsim.stable_lock, NULL);
 
 	for (int i = 0; i<(NUMTHREADS); i++){
 		printf("creating pthread %i\n", i);

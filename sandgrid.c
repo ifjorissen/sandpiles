@@ -41,7 +41,7 @@ void stabilize(int tid){
 	int gridH = gridsim.sgrid->height;
 	int regionLO = (gridH)/NUMTHREADS * tid;
 	int regionHI = (gridH)/NUMTHREADS * (tid+1) - 1;
-	// printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
+	printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
 	
 	//10 iterations
 	for(int i = 0; i<10; i++){
@@ -73,7 +73,6 @@ void stabilize(int tid){
 					//we need to lock the lower row (thus, lower mutex) and this row
 					else if ((j==regionLO)&&(tid!= 0)){
 						pthread_mutex_lock(&gridsim.mutex[tid-1]);
-						pthread_cond_wait(&gridsim.cond[tid-1], &gridsim.mutex[tid-1]);
 						// printf("locked mutex num: %d in critical section row: %d, tid: %d\n", tid-1, j, tid);
 						if(gridsim.sgrid->cells[cellnum] >= 4){
 							gridsim.sgrid->cells[cellnum] -= 4;
@@ -99,7 +98,7 @@ void stabilize(int tid){
 			}
 		}
 	}
-	// printf("end of stabilize from thread: %d\n", tid);
+	printf("end of stabilize from thread: %d\n", tid);
 }
 
 void displayGRID(){
