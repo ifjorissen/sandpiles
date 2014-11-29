@@ -13,7 +13,7 @@ grid_simulation_t gridsim;
 void *loop(void* info){
 	int tid = (int) info;
 	int iteration = 0;
-    while (gridsim.stable != 0) {
+    while (1) {
 		stabilize(tid);
 		bar_wait(gridsim.barrier);
 		if (tid == 0) {
@@ -24,13 +24,13 @@ void *loop(void* info){
 			//determine whether or not the grid is stable
 			pthread_mutex_lock(&gridsim.stable_lock);
 			gridsim.stable = isStable(gridsim.sgrid);
-			pthread_mutex_unlock(&gridsim.stable_lock);
-
 			if(gridsim.stable==0){	
 				printf("the grid is stable\n");
     			exit(0);
+    			// pthread_mutex_unlock(&gridsim.stable_lock);
     			return NULL;
 			}
+			pthread_mutex_unlock(&gridsim.stable_lock);
  		}
  		bar_wait(gridsim.barrier);
  		printf("stable: %d tid: %d\n", gridsim.stable, tid );

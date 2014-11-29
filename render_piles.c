@@ -38,7 +38,7 @@ float * cell_color(int grains){
 		//purple
 		case 4:
 			col[0] = 0.6;
-			col[1] = 0.2;
+			col[1] = 0.8;
 			col[2] = 0.7;
 			break;
 		//more than 4 grains, dark purple
@@ -53,19 +53,27 @@ float * cell_color(int grains){
 
 void *loop(void *info){
 	int tid = (int)info;
-	int stable = 1;
 	int iteration = 0;
-    while (stable != 0) {
+    while (1) {
+ 		stabilize(tid);
+ 		bar_wait(gridsim.barrier);
 		if (tid == 0) {
 			iteration ++;
 			printf("\niteration: %d", iteration);
 			glutPostRedisplay();
+
 			printf("\ndisplay updated\n");
-			stable = isStable(gridsim.sgrid);
+			//determine whether or not the grid is stable
+			pthread_mutex_lock(&gridsim.stable_lock);
+			gridsim.stable = isStable(gridsim.sgrid);
+			if(gridsim.stable == 0){
+				printf("the grid is stable\n");
+				// pthread_mutex_unlock(&gridsim.stable_lock);
+				return NULL;
+			}
+			pthread_mutex_unlock(&gridsim.stable_lock);
  		}
  		bar_wait(gridsim.barrier);
- 		stabilize(tid);
-		bar_wait(gridsim.barrier);
     }
     // printf("the grid is stable\n");
     // exit(0);
@@ -137,6 +145,7 @@ int main (int argc, char **argv){
 
 	gsim->sgrid = &sandgrid;
 	gsim->barrier = &barr;
+	gsim->stable = 1;
 
 	gridsim = *gsim;
 		//initialize mutexes

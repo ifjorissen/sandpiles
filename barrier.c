@@ -20,7 +20,7 @@ void *bar_wait(barrier_t *barrier){
 	barrier->count--;
 	if (barrier->count == 0){
 		barrier->count = NUMTHREADS;
-		printf("barrier met\n");
+		// printf("barrier met\n");
 		pthread_cond_broadcast(&barrier->last_thread);
 	}
 	else{

@@ -53,7 +53,7 @@ Compass:
 * 11.29.14 Error: will enter an infinite loop at times in the pthread loop function. Something sometimes the barrier doesn't work? --> Bug in barrier wait code
 
 
-Sample output from a 16x16 grid with 100 grains of sand (verbose):
+###Sample output from a 16x16 grid with 100 grains of sand (verbose):
 ```
 creating pthread 0
 creating pthread 1
@@ -251,7 +251,7 @@ the grid is stable
 
 
 
-Test output for the code in sandpiles
+###Test output for the code in sandpiles
 
 ```
 	stabilize called from thread: 1
