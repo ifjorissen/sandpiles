@@ -19,7 +19,7 @@
 #include <pthread.h> 
 #include <stdlib.h>
 
-#define NUMTHREADS (4)
+#define NUMTHREADS (5)
 #define NUMGRAINS (100)
 
 typedef struct _barrier_t{
@@ -43,6 +43,7 @@ typedef struct sandgrid_t{
 void init_sandgrid(sandgrid_t *sandgrid, int width, int height);
 void visual_grid(sandgrid_t *sandgrid);
 void *stabilize(void *arg);
+void *displayGRID(void *arg);
 int isStable(sandgrid_t *sandgrid);
 
 typedef struct grid_simulation_t{

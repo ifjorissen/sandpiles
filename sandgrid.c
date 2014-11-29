@@ -44,7 +44,7 @@ void *stabilize(void *info){
 	int regionHI = (gridH)/NUMTHREADS * (tid+1) - 1;
 	printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
 	
-	//100 iterations
+	//10 iterations
 	for(int i = 0; i<10; i++){
 		for(int j = regionLO; j<=regionHI; j++){
 			for (int k = 0; k < gridW; k++){
@@ -100,7 +100,16 @@ void *stabilize(void *info){
 			}
 		}
 	}
+	printf("end of stabilize from thread: %d\n", tid);
 	bar_wait(gridsim.barrier);
+	return NULL;
+}
+
+void *displayGRID(void *info){
+	bar_wait(gridsim.barrier);
+	int tid = (int)info;
+	printf("displayGRID called from tid: %d\n", tid);
+	visual_grid(gridsim.sgrid);
 	return NULL;
 }
 

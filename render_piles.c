@@ -51,6 +51,23 @@ float * cell_color(int grains){
 	return col;
 }
 
+void updateSandPiles(){
+	stabilize(1);
+	// for (int i = 0; i<(NUMTHREADS-1); i++){
+	// 	pthread_mutex_init(&gridsim.mutex[i], NULL);
+	// }
+
+	// //initialize threads
+	// for (int i = 0; i<NUMTHREADS; i++){
+	// 	pthread_create(gridsim.threads[i], NULL, stabilize, (void *)i);
+	// }
+	// for (int i = 0; i<NUMTHREADS; i++){
+	// 	printf("joining from update\n");
+	// 	pthread_join(gridsim.threads[i], NULL);
+	// }
+	glutPostRedisplay();
+}
+
 void display(void){
 	int gridH = gridsim.sgrid->height;
 	int gridW = gridsim.sgrid->width;
@@ -88,6 +105,7 @@ void display(void){
 		glEnd();
 	}
 	glFlush();      //Finish rendering
+	// updateSandPiles();
 }
 
 void reshape (int width, int height) {  
@@ -113,7 +131,6 @@ int main (int argc, char **argv){
 	// gsim->msg = test;
 
 	gridsim = *gsim;
-
 	//initialize mutexes
 	for (int i = 0; i<(NUMTHREADS-1); i++){
 		pthread_mutex_init(&gsim->mutex[i], NULL);
@@ -123,10 +140,10 @@ int main (int argc, char **argv){
 	for (int i = 0; i<NUMTHREADS; i++){
 		pthread_create(&gsim->threads[i], NULL, stabilize, (void *)i);
 	}
-	// for (int i = 0; i<NUMTHREADS; i++){
-	// 	printf("joining\n");
-	// 	pthread_join(gsim->threads[i], NULL);
-	// }
+	for (int i = 0; i<NUMTHREADS; i++){
+		printf("joining\n");
+		pthread_join(gsim->threads[i], NULL);
+	}
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE);

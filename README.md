@@ -1,10 +1,3 @@
-/* 
-   Isabella Jorissen
-   Hw. 6
-   Math 389
-   11.16.14
- */
-
 #Sandgrids
 --------------
 
@@ -28,6 +21,8 @@ To run OpenGL viz or ASCII vis:
 
 Example of how a 12x12 grid might be broken up with 4 threads
 
+```
+
 Compass: 
      N
    W . E
@@ -45,6 +40,8 @@ Compass:
     |L|_|_|_|_|_|_|_|_|_|_|L|
     |S|_|_|_|_|_|_|_|_|_|_|S|
     |*|S|I|N|K|*|C|E|L|L|S|*|
+
+```
 
 
 ##Todo:

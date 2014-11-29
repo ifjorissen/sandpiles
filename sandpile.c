@@ -32,25 +32,29 @@ int main(int argc, char **argv){
 
 	//initialize mutexes
 	while(stable !=0){
-		visual_grid(gridsim.sgrid);
 		for (int i = 0; i<(NUMTHREADS-1); i++){
 			pthread_mutex_init(&gridsim.mutex[i], NULL);
 		}
 		//initialize threads
-		for (int i = 0; i<NUMTHREADS; i++){
+		//initialize display thread
+		printf("creating display thread\n");
+		pthread_create(&gridsim.threads[NUMTHREADS-1], NULL, displayGRID, (void *)NUMTHREADS);
+		stable = isStable(gridsim.sgrid);
+		
+		for (int i = 0; i<(NUMTHREADS-1); i++){
 			pthread_create(&gridsim.threads[i], NULL, stabilize, (void *)i);
 		}
+
 		//join threads
 		for (int i = 0; i<NUMTHREADS; i++){
 			pthread_join(gridsim.threads[i], NULL);
-			// printf("region %d stable (0 if yes): %d\n", i, gridsim.stable_regions[i]);
 		}
-		stable = isStable(gridsim.sgrid);
 	}
 
 	//ascii visualization
 	printf("Sandpile after stability has been reached: \n");
 	visual_grid(gridsim.sgrid);
+	pthread_exit(NULL);
 
 	exit(0);
 

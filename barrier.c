@@ -20,7 +20,7 @@ void *bar_init(barrier_t *barrier, int pt_num){
 void *bar_wait(barrier_t *barrier){
 	printf("barrier wait called, capacity: %d\n", barrier->cmax);
 	pthread_mutex_lock(&barrier->mutex);
-	printf("mutex locked\n");
+	printf("barrier mutex locked\n");
 	barrier->count++;
 	if (barrier->count == barrier->cmax){
 		barrier->count = 0;
