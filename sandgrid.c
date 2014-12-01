@@ -37,11 +37,12 @@ int isStable(sandgrid_t *sgrid){
 }
 
 void stabilize(int tid){
+	int thread_num = gridsim.num_threads;
 	int gridW = gridsim.sgrid->width;
 	int gridH = gridsim.sgrid->height;
-	int regionLO = (gridH)/NUMTHREADS * tid;
-	int regionHI = (gridH)/NUMTHREADS * (tid+1) - 1;
-	
+	int regionLO = (gridH)/thread_num * tid;
+	int regionHI = (gridH)/thread_num * (tid+1) - 1;
+
 	//10 iterations
 	for(int i = 0; i<10; i++){
 		for(int j = regionLO; j<=regionHI; j++){
@@ -54,7 +55,7 @@ void stabilize(int tid){
 					int cellW = j*(gridW)+(k-1);
 					int cellS = (j+1)*(gridW)+k;
 					//we need to lock the higher row and this row (thus, higher mutex)
-					if ((j==regionHI)&&(tid!=(NUMTHREADS-1))){
+					if ((j==regionHI)&&(tid!=(thread_num-1))){
 						//lock the important bits
 						pthread_mutex_lock(&gridsim.mutex[tid]);
 

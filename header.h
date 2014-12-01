@@ -20,10 +20,11 @@
 #include <stdlib.h>
 
 // #define NUMTHREADS (8)
-#define NUMGRAINS (100)
+// #define NUMGRAINS (100)
 
 typedef struct _barrier_t{
 	int count;
+	int capacity;
 	pthread_cond_t last_thread;
 	pthread_mutex_t mutex;
 }barrier_t;
@@ -50,6 +51,7 @@ typedef struct grid_simulation_t{
 	int stable;
 	pthread_mutex_t stable_lock;
 	sandgrid_t *sgrid;
+	int num_threads;
 	// pthread_t threads [NUMTHREADS];
 	// pthread_mutex_t mutex [NUMTHREADS-1];
 	pthread_t *threads;

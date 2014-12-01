@@ -9,14 +9,17 @@ To compile everything:
 To run OpenGL viz or ASCII vis:
 `./renderOpenGL`
 `./renderASCII`
+`./speedTest`
  
 ##General Notes:
 
- `sandgrid.c` and `render_piles.c` are the master blocks of this program. Sandgrid.c runs what's necessary to generate the ASCII viz, and Render_piles.c for the OpenGl viz. 
- Both files make use of a global variable called gridsim (of type grid_simulation_t) which
+ `sandgrid.c`, 'timedGrid.c' and `render_piles.c` are the master blocks of this program. Sandgrid.c runs what's necessary to generate the ASCII viz, and Render_piles.c for the OpenGl viz.
+ TimedGrid.c runs the sandpiles stabilization with varying grain amounts and thread numbers. 
+ All three files make use of a global variable called gridsim (of type grid_simulation_t) which
  holds a pointer to the sandgrid, an array of pthreads, a pointer to the barrier, and an
- array of mutexes which are used in the locking mechanism for the grid regions. 
- The number of grains on the grid is defined in `header.h`, along with the number of threads in the program. 
+ array of mutexes which are used in the locking mechanism for the grid regions. It also holds an integer with
+ the number of total threads working on the grid as well as an integer variable indicating the stability of the grid and (a mutex to protect it). 
+ 
 
 
 ##Grid stucture:
@@ -47,13 +50,44 @@ Compass:
 
 
 ##Todo:
-* BUG: Hard to reproduce, but I will sometimes get an Illegal Hardware Instruction error (seems to be fixed now?)
-  e.g [1]    84998 illegal hardware instruction  ./renderASCII
 * In stabilize function: thread waits if the mutex is locked? 
-* Cells which are sinks and can hold any number of grains (Done)
 * OpenGl animation
-* 11.29.14 Error: will enter an infinite loop at times in the pthread loop function. Something sometimes the barrier doesn't work? --> Bug in barrier wait code
 
+
+###Sample RESULTS section output from timedGrid.c
+
+```
+RESULTS:
+Stabilizing a 64x64 grid with 100 grains and 1 threads took: 0.001490 seconds
+Stabilizing a 64x64 grid with 100 grains and 2 threads took: 0.001859 seconds
+Stabilizing a 64x64 grid with 100 grains and 4 threads took: 0.008990 seconds
+Stabilizing a 64x64 grid with 100 grains and 8 threads took: 0.029723 seconds
+Stabilizing a 64x64 grid with 100 grains and 16 threads took: 0.112257 seconds
+
+Stabilizing a 64x64 grid with 500 grains and 1 threads took: 0.006938 seconds
+Stabilizing a 64x64 grid with 500 grains and 2 threads took: 0.015013 seconds
+Stabilizing a 64x64 grid with 500 grains and 4 threads took: 0.066797 seconds
+Stabilizing a 64x64 grid with 500 grains and 8 threads took: 0.122904 seconds
+Stabilizing a 64x64 grid with 500 grains and 16 threads took: 0.518300 seconds
+
+Stabilizing a 64x64 grid with 1000 grains and 1 threads took: 0.014778 seconds
+Stabilizing a 64x64 grid with 1000 grains and 2 threads took: 0.022982 seconds
+Stabilizing a 64x64 grid with 1000 grains and 4 threads took: 0.176954 seconds
+Stabilizing a 64x64 grid with 1000 grains and 8 threads took: 0.332715 seconds
+Stabilizing a 64x64 grid with 1000 grains and 16 threads took: 0.770323 seconds
+
+Stabilizing a 64x64 grid with 2500 grains and 1 threads took: 0.043737 seconds
+Stabilizing a 64x64 grid with 2500 grains and 2 threads took: 0.065450 seconds
+Stabilizing a 64x64 grid with 2500 grains and 4 threads took: 0.405754 seconds
+Stabilizing a 64x64 grid with 2500 grains and 8 threads took: 0.797659 seconds
+Stabilizing a 64x64 grid with 2500 grains and 16 threads took: 2.474893 seconds
+
+Stabilizing a 64x64 grid with 5000 grains and 1 threads took: 0.104062 seconds
+Stabilizing a 64x64 grid with 5000 grains and 2 threads took: 0.140405 seconds
+Stabilizing a 64x64 grid with 5000 grains and 4 threads took: 0.928000 seconds
+Stabilizing a 64x64 grid with 5000 grains and 8 threads took: 1.788156 seconds
+Stabilizing a 64x64 grid with 5000 grains and 16 threads took: 4.735727 seconds
+```
 
 ###Sample output from a 16x16 grid with 100 grains of sand (verbose):
 ```

@@ -8,11 +8,11 @@
 #include "header.h"
 
 void *bar_init(barrier_t *barrier, int pt_num){
-	printf("barrier capacity %d\n", pt_num);
 	pthread_cond_t last_thread;
 	pthread_mutex_init(&barrier->mutex, NULL);
 	pthread_cond_init(&barrier->last_thread, NULL);
 	barrier->count = pt_num;
+	barrier->capacity = pt_num;
 	return NULL;
 }
 
@@ -20,7 +20,7 @@ void *bar_wait(barrier_t *barrier){
 	pthread_mutex_lock(&barrier->mutex);
 	barrier->count--;
 	if (barrier->count == 0){
-		barrier->count = NUMTHREADS;
+		barrier->count = barrier->capacity;
 		// printf("barrier met\n");
 		pthread_cond_broadcast(&barrier->last_thread);
 	}
