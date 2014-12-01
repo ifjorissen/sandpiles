@@ -19,6 +19,7 @@ all: compile renderOpenGL renderASCII
 compile:
 	gcc -pthread -o renderOpenGL render_piles.c sandgrid.c barrier.c -framework OpenGL -framework GLUT
 	gcc -pthread -o renderASCII sandpile.c sandgrid.c barrier.c
+	gcc -pthread -o speedTest timedGrid.c sandgrid.c barrier.c
 
 renderOpenGL:
 	$(eval activate_term := 'tell application "Terminal" to activate')
@@ -32,7 +33,11 @@ renderASCII:
 	$(eval start_env := 'tell application "Terminal" to do script "cd $(LOC) && ./renderASCII" in selected tab of the front window')
 	osascript -e ${activate_term} -e ${open_tab} -e ${start_env}
 
-
+speedTest:
+	$(eval activate_term := 'tell application "Terminal" to activate')
+	$(eval open_tab := 'tell application "System Events" to tell process "Terminal" to keystroke "t" using command down')
+	$(eval start_env := 'tell application "Terminal" to do script "cd $(LOC) && ./speedTest" in selected tab of the front window')
+	osascript -e ${activate_term} -e ${open_tab} -e ${start_env}
 
 
 help:

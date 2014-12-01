@@ -1,6 +1,8 @@
 #Sandgrids
 --------------
 
+github repository [https://github.com/ifjorissen/sandpiles]
+
 To compile everything:
 `make`
 
@@ -62,6 +64,7 @@ creating pthread 2
 stabilize called from thread: 1. region lower bound: 4, region upper bound: 7
 end of stabilize from thread: 0
 creating pthread 3
+joining pthread 0
 stabilize called from thread: 2. region lower bound: 8, region upper bound: 11
 end of stabilize from thread: 1
 stabilize called from thread: 3. region lower bound: 12, region upper bound: 15
@@ -247,6 +250,9 @@ iteration: 6
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 
 the grid is stable
+joining pthread 1
+joining pthread 2
+joining pthread 3
 ```
 
 

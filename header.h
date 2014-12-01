@@ -19,7 +19,7 @@
 #include <pthread.h> 
 #include <stdlib.h>
 
-#define NUMTHREADS (4)
+// #define NUMTHREADS (8)
 #define NUMGRAINS (100)
 
 typedef struct _barrier_t{
@@ -39,7 +39,8 @@ typedef struct sandgrid_t{
 				  //array of cells which will hold the number of grains
 } sandgrid_t;
 
-void init_sandgrid(sandgrid_t *sandgrid, int width, int height);
+void init_sandgrid(sandgrid_t *sandgrid, int width, int height, int grains);
+void init_cells(sandgrid_t *sandgrid, int grains);
 void visual_grid(sandgrid_t *sandgrid);
 void stabilize(int info);
 void displayGRID();
@@ -49,9 +50,10 @@ typedef struct grid_simulation_t{
 	int stable;
 	pthread_mutex_t stable_lock;
 	sandgrid_t *sgrid;
-	pthread_t threads [NUMTHREADS];
-	pthread_mutex_t mutex [NUMTHREADS-1];
-	pthread_cond_t cond [NUMTHREADS-1];
+	// pthread_t threads [NUMTHREADS];
+	// pthread_mutex_t mutex [NUMTHREADS-1];
+	pthread_t *threads;
+	pthread_mutex_t *mutex;
 	barrier_t *barrier;
 }grid_simulation_t;
 

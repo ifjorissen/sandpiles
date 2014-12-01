@@ -41,7 +41,6 @@ void stabilize(int tid){
 	int gridH = gridsim.sgrid->height;
 	int regionLO = (gridH)/NUMTHREADS * tid;
 	int regionHI = (gridH)/NUMTHREADS * (tid+1) - 1;
-	// printf("stabilize called from thread: %d. region lower bound: %d, region upper bound: %d\n", tid, regionLO, regionHI);
 	
 	//10 iterations
 	for(int i = 0; i<10; i++){
@@ -106,12 +105,12 @@ void displayGRID(){
 	visual_grid(gridsim.sgrid);
 }
 
-void init_cells(sandgrid_t *sgrid){
+void init_cells(sandgrid_t *sgrid, int grains){
 	for (int i =0; i<sgrid->height; i++){
 		for(int j=0; j<sgrid->width; j++){
 			int cellnum = i*(sgrid->width)+j;
 			if ((i == sgrid->height/2 - 1) && (j == sgrid->width/2 - 1)){
-				sgrid->cells[cellnum]= NUMGRAINS;
+				sgrid->cells[cellnum]= grains;
 			}
 			else{
 				sgrid->cells[cellnum] = 0;
@@ -120,10 +119,10 @@ void init_cells(sandgrid_t *sgrid){
 	}
 }
 
-void init_sandgrid(sandgrid_t *sgrid, int w, int h){
+void init_sandgrid(sandgrid_t *sgrid, int w, int h, int grains){
 	sgrid->cells = (int *)malloc(sizeof(int)*(w)*(h));
 	sgrid->width = w;
 	sgrid->height = h;
-	init_cells(sgrid);
+	init_cells(sgrid, grains);
 }
 

@@ -8,6 +8,7 @@
 #include "header.h"
 
 void *bar_init(barrier_t *barrier, int pt_num){
+	printf("barrier capacity %d\n", pt_num);
 	pthread_cond_t last_thread;
 	pthread_mutex_init(&barrier->mutex, NULL);
 	pthread_cond_init(&barrier->last_thread, NULL);

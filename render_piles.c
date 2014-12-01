@@ -61,15 +61,11 @@ void *loop(void *info){
 			iteration ++;
 			printf("\niteration: %d", iteration);
 			glutPostRedisplay();
-
-			printf("\ndisplay updated\n");
 			//determine whether or not the grid is stable
 			pthread_mutex_lock(&gridsim.stable_lock);
 			gridsim.stable = isStable(gridsim.sgrid);
 			if(gridsim.stable == 0){
-				printf("the grid is stable\n");
-				// pthread_mutex_unlock(&gridsim.stable_lock);
-				return NULL;
+				printf("the grid is stable afte %d iterations\n", iteration);
 			}
 			pthread_mutex_unlock(&gridsim.stable_lock);
  		}
@@ -137,10 +133,11 @@ int main (int argc, char **argv){
 	glClearColor(0.0,0.0,0.0,0.0);
 
 	barrier_t barr;
+	int grains = 100;
 	sandgrid_t sandgrid;
 	grid_simulation_t *gsim =  (grid_simulation_t *)malloc(sizeof(grid_simulation_t));
 
-	init_sandgrid(&sandgrid, 16, 16);
+	init_sandgrid(&sandgrid, 16, 16, grains);
 	bar_init(&barr, NUMTHREADS);
 
 	gsim->sgrid = &sandgrid;
