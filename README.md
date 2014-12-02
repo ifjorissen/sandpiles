@@ -13,12 +13,15 @@ To run OpenGL viz or ASCII vis:
  
 ##General Notes:
 
- `sandgrid.c`, 'timedGrid.c' and `render_piles.c` are the master blocks of this program. Sandgrid.c runs what's necessary to generate the ASCII viz, and Render_piles.c for the OpenGl viz.
+ `sandgrid.c`, 'timedGrid.c' and `render_piles.c` are the master blocks of this program. 
+ Sandgrid.c runs what's necessary to generate the ASCII viz, and Render_piles.c for the OpenGl viz.
+ Renderpiles.c generates a graph for a 64x64 grid with 5000 grains on it. 
  TimedGrid.c runs the sandpiles stabilization with varying grain amounts and thread numbers. 
  All three files make use of a global variable called gridsim (of type grid_simulation_t) which
  holds a pointer to the sandgrid, an array of pthreads, a pointer to the barrier, and an
- array of mutexes which are used in the locking mechanism for the grid regions. It also holds an integer with
- the number of total threads working on the grid as well as an integer variable indicating the stability of the grid and (a mutex to protect it). 
+ array of mutexes which are used in the locking mechanism for the grid regions. 
+ It also holds an integer with the number of total threads working on the grid as well as an
+ integer variable indicating the stability of the grid and (a mutex to protect it). 
  
 
 

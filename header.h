@@ -10,10 +10,15 @@
 #define __HEADER_H
 
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+   
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
-#include <GLUT/glut.h>
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h> 

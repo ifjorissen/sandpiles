@@ -38,7 +38,7 @@ float * cell_color(int grains){
 		//purple
 		case 4:
 			col[0] = 0.6;
-			col[1] = 0.8;
+			col[1] = 0.2;
 			col[2] = 0.7;
 			break;
 		//more than 4 grains, dark purple
@@ -59,13 +59,11 @@ void *loop(void *info){
  		bar_wait(gridsim.barrier);
 		if (tid == 0) {
 			iteration ++;
-			printf("\niteration: %d", iteration);
 			glutPostRedisplay();
-			//determine whether or not the grid is stable
 			pthread_mutex_lock(&gridsim.stable_lock);
 			gridsim.stable = isStable(gridsim.sgrid);
 			if(gridsim.stable == 0){
-				printf("the grid is stable afte %d iterations\n", iteration);
+				printf("the grid is stable after %d iterations\n", iteration);
 			}
 			pthread_mutex_unlock(&gridsim.stable_lock);
  		}
@@ -128,15 +126,15 @@ int main (int argc, char **argv){
 	glutInitDisplayMode(GLUT_SINGLE);
 	glutInitWindowSize(500,500);
 	glutInitWindowPosition (100, 600);
-	glutCreateWindow("Intro");
+	glutCreateWindow("Sandpiles Simulation");
 	glClearColor(0.0,0.0,0.0,0.0);
 
 	barrier_t barr;
 	sandgrid_t sandgrid;
 	int thread_num = 4;
-	int grains = 100;
-	int gridW = 16;
-	int gridH = 16;
+	int grains = 5000;
+	int gridW = 64;
+	int gridH = 64;
 
 	grid_simulation_t *gsim =  (grid_simulation_t *)malloc(sizeof(grid_simulation_t));
 	gridsim = *gsim;
@@ -160,7 +158,6 @@ int main (int argc, char **argv){
 	pthread_mutex_init(&gridsim.stable_lock, NULL);
 
 	for (int i = 0; i<(thread_num); i++){
-		printf("creating pthread %i\n", i);
 		pthread_create(&gridsim.threads[i], NULL, loop, (void *)i);
 	}
 
